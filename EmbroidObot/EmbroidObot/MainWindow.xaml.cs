@@ -22,6 +22,7 @@ using System.Windows.Forms;
 
 
 
+
 namespace EmbroidObot
 {
     public partial class MainWindow : Window
@@ -45,7 +46,7 @@ namespace EmbroidObot
             DstDisplayViewControl.DataContext = dstDisplayViewModelObject;
         }
 
-        IList<StitchTajima> stitches = new List<StitchTajima>();
+        public IList<StitchTajima> stitches = new List<StitchTajima>();
 
         public void OpenDst(string fileName)
         {
@@ -71,11 +72,106 @@ namespace EmbroidObot
         }
 
         //sends the GCode to the printer if a Dst file has been loaded
-        public void SendGCode_Click(object sender, RoutedEventArgs e)
+        public void SendStitches_Click(object sender, RoutedEventArgs e)
         {
+
+            
+
             if (mainWindowViewModelObject.ActiveDst != null)
             {
-                //mainWindowViewModelObject.SendGcode();
+                SendStitches();
+            }
+        }
+
+        public void SendStitches()
+        {
+            SerialPort port = new SerialPort(
+                  mainWindowViewModelObject.SelectedPort, mainWindowViewModelObject.SelectedBaudRate, Parity.None, 8, StopBits.One);
+
+
+            try
+            {
+                port.Open();//opens serial port
+
+                int i = 0;
+                foreach (StitchTajima stitch in stitches)
+                {
+
+
+                    int x = stitch.XPath + 128;
+                    int y = stitch.YPath + 128;
+
+
+                    byte[] test = new byte[] { (byte)(x), (byte)(y), (byte)stitch.JumpStitch, (byte)stitch.ColourChange };
+
+
+                    string output = (test[0] -128) + ":" + (test[1]-128) + ":" + test[2] + ":" + test[3];
+
+
+
+                    port.Write(test,0,4) ;
+
+                    Console.WriteLine(output + "   " + port.ReadLine());
+
+                }
+
+                    
+
+                bool b = true;
+
+                System.Windows.Forms.MessageBox.Show("success", "success", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+
+
+                //Console.WriteLine(port.ReadLine());
+
+
+                port.Close();
+
+
+
+
+            }
+            catch
+            {
+                System.Windows.Forms.MessageBox.Show("Error", "error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+        }
+
+        void SendTest()
+        {
+            SerialPort port = new SerialPort(mainWindowViewModelObject.SelectedPort, mainWindowViewModelObject.SelectedBaudRate, Parity.None, 8, StopBits.One);
+
+
+            try
+            {
+                port.Open();//opens serial port
+
+                int i = 0;
+
+                byte[] test = new byte[] { (byte)0, (byte)0, (byte)0, (byte)0 };                    
+
+                port.Write(test, 0, 4);
+
+                Console.WriteLine(port.ReadLine());
+
+                bool b = true;
+
+                System.Windows.Forms.MessageBox.Show("success", "success", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+
+
+                //Console.WriteLine(port.ReadLine());
+
+
+                port.Close();
+
+
+
+
+            }
+            catch
+            {
+                System.Windows.Forms.MessageBox.Show("Error", "error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -139,32 +235,33 @@ namespace EmbroidObot
 
         private void button_Click(object sender, RoutedEventArgs e)
         {
+            SendTest();
+
+            //System.Windows.Forms.ColorDialog colorDialog1 = new System.Windows.Forms.ColorDialog();
 
 
-            System.Windows.Forms.ColorDialog colorDialog1 = new System.Windows.Forms.ColorDialog();
+            //// Show the color dialog.
+            //DialogResult result = colorDialog1.ShowDialog();
+            //// See if user pressed ok.
+            //if (result == System.Windows.Forms.DialogResult.OK)
+            //{
+            //    var wpfColor = System.Windows.Media.Color.FromArgb(colorDialog1.Color.A, colorDialog1.Color.R, colorDialog1.Color.G, colorDialog1.Color.B);
 
+            //    var brush = new SolidColorBrush(wpfColor);
 
-            // Show the color dialog.
-            DialogResult result = colorDialog1.ShowDialog();
-            // See if user pressed ok.
-            if (result == System.Windows.Forms.DialogResult.OK)
-            {
-                var wpfColor = System.Windows.Media.Color.FromArgb(colorDialog1.Color.A, colorDialog1.Color.R, colorDialog1.Color.G, colorDialog1.Color.B);
+            //    dstDisplayViewModelObject.UpdateLineColour(brush);
 
-                var brush = new SolidColorBrush(wpfColor);
-
-                dstDisplayViewModelObject.UpdateLineColour(brush);
-
-            }
+            //}
         }
+
     }
 
     public class StitchTajima
     {
         private int xPath;
         private int yPath;
-        private bool jumpStitch;
-        private bool colourChange;
+        private int jumpStitch;
+        private int colourChange;
 
         public StitchTajima(string b1, string b2, string b3)
         {
@@ -194,20 +291,20 @@ namespace EmbroidObot
 
             if (Convert.ToInt32(b3[0]) == '1')
             {
-                jumpStitch = true;
+                jumpStitch = 1;
             }
             else
             {
-                jumpStitch = false;
+                jumpStitch = 0;
             }
 
             if (Convert.ToInt32(b3[1]) == '1')
             {
-                colourChange = true;
+                colourChange = 1;
             }
             else
             {
-                colourChange = false;
+                colourChange = 0;
             }
         }
 
@@ -225,14 +322,14 @@ namespace EmbroidObot
                 return yPath;
             }
         }
-        public bool JumpStitch
+        public int JumpStitch
         {
             get
             {
                 return jumpStitch;
             }
         }
-        public bool ColourChange
+        public int ColourChange
         {
             get
             {
@@ -242,6 +339,8 @@ namespace EmbroidObot
 
 
     }
+
+
 
 
 }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using EmbroidObot.Model;
 using System.ComponentModel;
 using System.IO.Ports;
+using System.Windows.Forms;
 
 namespace EmbroidObot.ViewModel
 {
@@ -117,6 +118,8 @@ namespace EmbroidObot.ViewModel
                  activePorts = value;
              }
          }
+
+        
          
     }
 }

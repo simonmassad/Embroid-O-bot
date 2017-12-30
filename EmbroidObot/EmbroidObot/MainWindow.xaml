@@ -37,11 +37,11 @@
 
         <Label Content="Select Baud Rate" FontSize="14" Foreground="Navy" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="3" Grid.Column="1"></Label>
 
-        <ComboBox ItemsSource="{Binding ActivePorts}" Grid.Row="4" Grid.Column="0" Height="20" Width="80" SelectedItem="{Binding SelectedPort}" SelectedIndex="0"></ComboBox>
+        <ComboBox Name="ComPortCombobox" ItemsSource="{Binding ActivePorts}" Grid.Row="4" Grid.Column="0" Height="20" Width="80" SelectedItem="{Binding SelectedPort}" SelectedIndex="0"></ComboBox>
 
         <Label Content="Select Com Port" FontSize="14" Foreground="Navy" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="4" Grid.Column="1"></Label>
 
-        <Button Name="SendGCode" Height="40" Width="80" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10" Click="SendGCode_Click" Grid.Column="0" Grid.Row="2">Send G-Code</Button>
+        <Button Name="SendGCode" Height="40" Width="80" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10" Click="SendStitches_Click" Grid.Column="0" Grid.Row="2">Send G-Code</Button>
 
         <views:DstDisplayView x:Name = "DstDisplayViewControl" Loaded = "DisplayViewControl_Loaded" Grid.Row="0" Grid.Column="2" Grid.RowSpan="7"/>
         <Button x:Name="button" Content="Button" HorizontalAlignment="Left" Margin="10,0,0,0" Grid.Row="5" VerticalAlignment="Top" Width="75" Click="button_Click"/>
